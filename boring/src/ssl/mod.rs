@@ -2737,6 +2737,20 @@ impl SslRef {
             .map(|_| ())
         }
     }
+    pub fn set_ech(&mut self, ech_config: &[u8]) -> Result<(), ErrorStack> {
+        unsafe {
+            let ech = ffi::SSL_set1_ech_config_list(
+                self.as_ptr(),
+                ech_config.as_ptr() as *const _,
+                ech_config.len() as ProtosLen,
+            );
+            if ech == 1 {
+                Ok(())
+            } else {
+                Err(ErrorStack::get())
+            }
+        }
+    }
 
     #[cfg(feature = "kx-safe-default")]
     fn client_set_default_curves_list(&mut self) {
